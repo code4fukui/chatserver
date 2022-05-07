@@ -1,5 +1,7 @@
 # chatserver
 
+setup [Deno](https://deno.land/) ([Deno](https://deno.land/)をインストール)
+
 clone this repository (このリポジトリをクローン)
 ```
 git clone https://github.com/code4fukui/chatserver.git
