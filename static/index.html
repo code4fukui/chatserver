@@ -1,23 +1,18 @@
-web socket test
+<h1>Deno WebSocket chat</h1>
 
-<div id=rcv></div>
-
-<button id=btn>send</button>
+<div id=recv></div>
+<input id=mes><button id=btn>send</button>
 
 <script type="module">
-const protocol = window.location.protocol === "http:" ? "ws://" : "wss://";
-const address = protocol + window.location.host + "/ws";
-//const address = "ws://[::]:7001/ws";
-console.log(address);
+const address = "ws://localhost:7001/ws";
 const socket = new WebSocket(address);
 socket.onmessage = (msg) => {
-  console.log("receieve", msg.data);
-  rcv.textContent = msg.data;
+  const data = JSON.parse(msg.data);
+  const div = document.createElement("div");
+  div.textContent = data.id + " > " + data.data;
+  recv.appendChild(div);
 };
-console.log('Live reload enabled.');
-
-let i = 0;
 btn.onclick = () => {
-  socket.send(i++);
+  socket.send(mes.value);
 };
 </script>
