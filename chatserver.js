@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.136.0/http/server.ts";
 import { serveWeb } from "./serveWeb.js";
 
-const defaultport = parseInt(Deno.args[0] || "8080");
+const defaultport = parseInt(Deno.args[0] || "7001");
 const proxyhost = Deno.args[1] || "";
 
 class ChatServer {

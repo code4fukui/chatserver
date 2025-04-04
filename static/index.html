@@ -4,7 +4,7 @@
 <input id=mes><button id=btn>send</button>
 
 <script type="module">
-const address = "ws://localhost:8080/ws";
+const address = "ws://localhost:7001/ws";
 const socket = new WebSocket(address);
 socket.onmessage = (msg) => {
   const data = JSON.parse(msg.data);

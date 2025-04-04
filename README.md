@@ -13,7 +13,7 @@ cd chatserver
 deno run -A chatserver
 ```
 
-open http://localhost:8080/ by tow browser instances. (ブラウザで http://localhost:8080/ を2画面開く)
+open http://localhost:7001/ by tow browser instances. (ブラウザで http://localhost:7001/ を2画面開く)
 
 chat in each browsers. (お互いチャットできる！)
 
