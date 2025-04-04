@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title>ssshare - with Deno/chatserver</title>
+</head><body>
+<h1>Deno WebSocket chat</h1>
+
+<input id=room placeholder="room name"><button id=btnenter>enter</button><br>
+<br>
+
+<main id=main style="display:none">
+<div id=recv></div>
+<input id=mes><button id=btn>send</button>
+</main>
+
+<hr>
+<a href=https://github.com/code4fukui/chatserver/>src on GitHub</a><br>
+
+<script type="module">
+btnenter.onclick = () => {
+  main.style.display = "block";
+  const roomname = room.value;
+  const host = document.location.hostname;
+  const port = document.location.port;
+  const protocol = document.location.protocol == "https:" ? "wss:" : "ws:";
+  const address = `${protocol}//${host}:${port}/${roomname}/ws`;
+  console.log(address)
+  const socket = new WebSocket(address);
+  socket.onmessage = (msg) => {
+    const data = JSON.parse(msg.data);
+    const div = document.createElement("div");
+    div.textContent = data.id + " > " + data.data;
+    recv.appendChild(div);
+  };
+  btn.onclick = () => {
+    socket.send(mes.value);
+  };
+};
+
+</script>
+</body></html>
