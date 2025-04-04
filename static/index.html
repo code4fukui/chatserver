@@ -16,19 +16,7 @@
 
 <script type="module">
 import { CBOR } from "https://js.sabae.cc/CBOR.js";
-
-const blob2bin = async (blob) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      const arrayBuffer = reader.result;
-      resolve(new Uint8Array(arrayBuffer));
-    };
-    reader.onerror = reject;
-    reader.readAsArrayBuffer(blob);
-  });
-};
+import { blob2bin } from "./blob2bin.js";
 
 btnenter.onclick = () => {
   main.style.display = "block";
