@@ -6,7 +6,7 @@ const proxyhost = Deno.args[1] || "";
 
 class ChatServer {
   constructor() {
-    this.cons = [];
+    this.cons = {}; // array by roomname
   }
 
   async checkFreePort(port) {
@@ -21,13 +21,19 @@ class ChatServer {
     const handler = async (req, conn) => {
       try {
         if (req.method === "GET" && req.url.endsWith("/ws")) {
+          const s = req.url.substring(0, req.url.length - 3);
+          const roomname = s.substring(s.lastIndexOf("/") + 1);
+          let room = this.cons[roomname];
+          if (!room) {
+            room = this.cons[roomname] = [];
+          }
           const { socket, response } = Deno.upgradeWebSocket(req);
           socket.remoteAddr = conn.remoteAddr.hostname;
           if (socket.remoteAddr == proxyhost) {
             socket.remoteAddr = req.headers.get("x-real-ip");
           }
           socket.remotePort = conn.remoteAddr.port;
-          await this.accept(socket)
+          await this.accept(socket, room)
           return response;
         } else {
           return serveWeb(req);
@@ -49,8 +55,9 @@ class ChatServer {
     }
   }
 
-  async accept(ws) {
-    this.cons.push(ws);
+  async accept(ws, room) {
+    room.push(ws);
+        console.log("open", room)
     const id = ws.remoteAddr + " " + ws.remotePort;
     console.log(id);
     ws.onmessage = (msg) => {
@@ -58,14 +65,21 @@ class ChatServer {
         id: id,
         data: msg.data,
       };
-      this.send(data, ws);
+      this.send(data, ws, room);
       console.log("onmessage", data);
+    };
+    ws.onclose = () => {
+      const idx = room.indexOf(ws);
+      if (idx >= 0) {
+        room.splice(idx, 1);
+        console.log("close", room)
+      }
     };
   }
 
-  async send(s, mysocket) {
+  async send(s, mysocket, room) {
     try {
-      for (const ws of this.cons) {
+      for (const ws of room) {
         try {
           s.self = ws == mysocket;
           console.log("send " + s);
