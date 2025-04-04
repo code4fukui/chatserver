@@ -15,6 +15,21 @@
 <a href=https://github.com/code4fukui/chatserver/>src on GitHub</a><br>
 
 <script type="module">
+import { CBOR } from "https://js.sabae.cc/CBOR.js";
+
+const blob2bin = async (blob) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const arrayBuffer = reader.result;
+      resolve(new Uint8Array(arrayBuffer));
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(blob);
+  });
+};
+
 btnenter.onclick = () => {
   main.style.display = "block";
   const roomname = room.value;
@@ -24,8 +39,9 @@ btnenter.onclick = () => {
   const address = `${protocol}//${host}:${port}/${roomname}/ws`;
   console.log(address)
   const socket = new WebSocket(address);
-  socket.onmessage = (msg) => {
-    const data = JSON.parse(msg.data);
+  socket.onmessage = async (msg) => {
+    const bin = await blob2bin(msg.data);
+    const data = CBOR.decode(bin);
     const div = document.createElement("div");
     div.textContent = data.id + " > " + data.data;
     recv.appendChild(div);

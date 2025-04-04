@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.136.0/http/server.ts";
 import { serveWeb } from "./serveWeb.js";
+import { CBOR } from "https://js.sabae.cc/CBOR.js";
 
 const defaultport = parseInt(Deno.args[0] || "7001");
 const proxyhost = Deno.args[1] || "";
@@ -57,9 +58,9 @@ class ChatServer {
 
   async accept(ws, room) {
     room.push(ws);
-        console.log("open", room)
+    console.log("open", room)
     const id = ws.remoteAddr + " " + ws.remotePort;
-    console.log(id);
+    //console.log(id);
     ws.onmessage = (msg) => {
       const data = {
         id: id,
@@ -83,7 +84,7 @@ class ChatServer {
         try {
           s.self = ws == mysocket;
           console.log("send " + s);
-          await ws.send(JSON.stringify(s));
+          await ws.send(CBOR.encode(s));
         } catch (e) {
           //this.cons.remove(ws);
         }
