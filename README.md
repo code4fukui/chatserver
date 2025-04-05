@@ -10,7 +10,7 @@ or download (もしくは、ダウンロード)
 
 ```
 cd chatserver
-deno run -A chatserver.js 7001 "[::]"
+deno serve --port 7001 --host "[::]" -A chatserver.js
 ```
 
 open http://localhost:7001/ssshare.html by a browser instance. (ブラウザで http://localhost:7001/ssshare.html を開く)
