@@ -4,13 +4,13 @@ setup [Deno](https://deno.land/) ([Deno](https://deno.land/)をインストー�
 
 clone this repository (このリポジトリをクローン)
 ```
-git clone https://github.com/code4fukui/chatserver.git
+git clone -b screenshare https://github.com/code4fukui/chatserver.git
 ```
 or download (もしくは、ダウンロード)
 
 ```
 cd chatserver
-deno run -A chatserver
+deno run -A chatserver.js 7001 "[::]"
 ```
 
 open http://localhost:7001/ssshare.html by a browser instance. (ブラウザで http://localhost:7001/ssshare.html を開く)
