@@ -28,6 +28,7 @@ class ChatServer {
           if (!room) {
             room = this.cons[roomname] = [];
           }
+          console.log(roomname, s, req.url, room)
           const { socket, response } = Deno.upgradeWebSocket(req);
           socket.remoteAddr = conn.remoteAddr.hostname;
           if (socket.remoteAddr == proxyhost) {
@@ -48,7 +49,7 @@ class ChatServer {
       if (await this.checkFreePort(port)) {
         const hostname = "[::]"; // for IPv6
         const addr = hostname + ":" + port;
-        console.log(`http://${addr}/`, proxyhost);
+        //console.log(`http://${addr}/`, proxyhost);
         serve(handler, { hostname, port });
         break;
       }
@@ -58,22 +59,20 @@ class ChatServer {
 
   async accept(ws, room) {
     room.push(ws);
-    console.log("open", room)
+    //console.log("open", room)
     const id = ws.remoteAddr + " " + ws.remotePort;
     //console.log(id);
     ws.onmessage = (msg) => {
-      const data = {
-        id: id,
-        data: msg.data,
-      };
-      this.send(data, ws, room);
-      console.log("onmessage", data);
+      const data = typeof msg.data == "string" ? msg.data : new Uint8Array(msg.data);
+      const packet = { id, data };
+      this.send(packet, ws, room);
+      //console.log("onmessage", data);
     };
     ws.onclose = () => {
       const idx = room.indexOf(ws);
       if (idx >= 0) {
         room.splice(idx, 1);
-        console.log("close", room)
+        //console.log("close", room)
       }
     };
   }
@@ -83,7 +82,7 @@ class ChatServer {
       for (const ws of room) {
         try {
           s.self = ws == mysocket;
-          console.log("send " + s);
+          //console.log("send " + s);
           await ws.send(CBOR.encode(s));
         } catch (e) {
           //this.cons.remove(ws);

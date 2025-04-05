@@ -1,4 +1,4 @@
-# chatserver
+# chatserver - screenshare
 
 setup [Deno](https://deno.land/) ([Deno](https://deno.land/)をインストール)
 
@@ -13,7 +13,8 @@ cd chatserver
 deno run -A chatserver
 ```
 
-open http://localhost:7001/ by tow browser instances. (ブラウザで http://localhost:7001/ を2画面開く)
+open http://localhost:7001/ssshare.html by a browser instance. (ブラウザで http://localhost:7001/ssshare.html を開く)
 
-chat in each browsers. (お互いチャットできる！)
+open http://localhost:7001/ssrecv.html by a browser instance. (ブラウザで http://localhost:7001/ssrecv.html を開く)
 
+you can share your screen. (画面を配信できる！)

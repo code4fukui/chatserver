@@ -1,39 +1,141 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
 <title>ssshare - with Deno/chatserver</title>
 </head><body>
-<h1>Deno WebSocket chat</h1>
+<h1>ssshare - with Deno/chatserver</h1>
 
 <input id=room placeholder="room name"><button id=btnenter>enter</button><br>
 <br>
 
 <main id=main style="display:none">
-<div id=recv></div>
+<button id=btncap>start to share screen</button> <button id=btnstop>stop</button><br>
+<div id=screens></div>
+
 <input id=mes><button id=btn>send</button>
+<div id=recv></div>
 </main>
 
 <hr>
 <a href=https://github.com/code4fukui/chatserver/>src on GitHub</a><br>
 
 <script type="module">
+import { CBOR } from "https://js.sabae.cc/CBOR.js";
+import { blob2bin, jpeg2img, canvas2bin, eqaulsBin, insertChild } from "./util.js";
+import { Time } from "https://js.sabae.cc/DateTime.js";
+
 btnenter.onclick = () => {
   main.style.display = "block";
-  const roomname = room.value;
+  const roomname = room.value == "" ? "default" : room.value;
   const host = document.location.hostname;
-  const port = document.location.port;
+  const port = document.location.port ? ":" + document.location.port : "";
   const protocol = document.location.protocol == "https:" ? "wss:" : "ws:";
-  const address = `${protocol}//${host}:${port}/${roomname}/ws`;
+  const address = `${protocol}//${host}${port}/${roomname}/ws`;
   console.log(address)
+  
   const socket = new WebSocket(address);
-  socket.onmessage = (msg) => {
-    const data = JSON.parse(msg.data);
-    const div = document.createElement("div");
-    div.textContent = data.id + " > " + data.data;
-    recv.appendChild(div);
+  socket.onmessage = async (msg) => {
+    const bin = await blob2bin(msg.data);
+    const data = CBOR.decode(bin);
+    console.log(data)
+    if (typeof data.data == "string") {
+      const div = document.createElement("div");
+      const time = new Time().toStringSec();
+      div.textContent = data.id + " " + time + " > " + data.data;
+      insertChild(recv, div);
+    } else {
+      const id = "screen_" + data.id;
+      let div = document.getElementById(id);
+      if (!div) {
+        div = document.createElement("div");
+        div.id = id;
+        const divname = document.createElement("div");
+        divname.textContent = data.id;
+        div.appendChild(divname);
+        const divimg = document.createElement("div");
+        div.appendChild(divimg);
+        screens.appendChild(div);
+      }
+      const img = jpeg2img(data.data);
+      div.children[1].innerHTML = "";
+      div.children[1].appendChild(img);
+    }
   };
   btn.onclick = () => {
     socket.send(mes.value);
+    mes.value = "";
+  };
+
+  let t = null;
+  let stream = null;
+  let video = null;
+  const startCapture = async () => {
+    try {
+      // 画面キャプチャを取得
+      stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      video = document.createElement("video");
+      video.srcObject = stream;
+      await video.play();
+
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+
+      let bkbin = null;
+      // 動画が準備できたらフレームを定期的にキャプチャ
+      const captureAndSend = async () => {
+        // キャンバスサイズを動画に合わせる
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // 現在のフレームを描画
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const bin = await canvas2bin(canvas);
+        if (!eqaulsBin(bkbin, bin)) {
+          socket.send(bin);
+          bkbin = bin;
+        }
+
+        // フレームの変更を指定間隔でチェック
+        const delay = 100;
+        t = setTimeout(captureAndSend, delay);
+      };
+
+      // 最初のキャプチャ開始
+      captureAndSend();
+    } catch (e) {
+      console.log("err", e);
+    }
+  };
+  const stopCapture = () => {
+    if (t) {
+      clearTimeout(t);
+      t = null;
+    }
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+    }
+    if (video) {
+      video.srcObject = null;
+    }
+  };
+  btncap.onclick = () => {
+    stopCapture();
+    startCapture();
+  };
+  btnstop.onclick = () => {
+    stopCapture();
   };
 };
 
 </script>
+
+<style>
+#screens div {
+  display: inline-block;
+  height: 200px;
+}
+#screens img {
+  height: 100%;
+}
+</style>
+
 </body></html>
