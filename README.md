@@ -1,10 +1,10 @@
-# chatserver - screenshare
+# chatserver
 
 setup [Deno](https://deno.land/) ([Deno](https://deno.land/)をインストール)
 
 clone this repository (このリポジトリをクローン)
 ```
-git clone -b screenshare https://github.com/code4fukui/chatserver.git
+git clone https://github.com/code4fukui/chatserver.git
 ```
 or download (もしくは、ダウンロード)
 
@@ -12,6 +12,15 @@ or download (もしくは、ダウンロード)
 cd chatserver
 deno serve --port 7001 --host "[::]" -A chatserver.js
 ```
+
+## simple chat
+
+open http://localhost:7001/ by tow browser instances. (ブラウザで http://localhost:7001/ を2画面開く)
+
+chat in each browsers. (お互いチャットできる！)
+
+
+## screen share
 
 open http://localhost:7001/ssshare.html by a browser instance. (ブラウザで http://localhost:7001/ssshare.html を開く)
 
