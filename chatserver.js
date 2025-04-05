@@ -29,7 +29,6 @@ class ChatServer {
           if (!room) {
             room = this.cons[roomname] = [];
           }
-          console.log(roomname, s, req.url, room)
           const { socket, response } = Deno.upgradeWebSocket(req);
           socket.remoteAddr = conn.remoteAddr.hostname;
           if (socket.remoteAddr == proxyhost || isLocalHost(socket.remoteAddr)) {
