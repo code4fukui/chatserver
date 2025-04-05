@@ -4,6 +4,7 @@ import { CBOR } from "https://js.sabae.cc/CBOR.js";
 
 const defaultport = parseInt(Deno.args[0] || "7001");
 const proxyhost = Deno.args[1] || "";
+const isLocalHost = (host) => host == "::ffff:127.0.0.1" || host == "::1";
 
 class ChatServer {
   constructor() {
@@ -31,8 +32,10 @@ class ChatServer {
           console.log(roomname, s, req.url, room)
           const { socket, response } = Deno.upgradeWebSocket(req);
           socket.remoteAddr = conn.remoteAddr.hostname;
-          if (socket.remoteAddr == proxyhost) {
-            socket.remoteAddr = req.headers.get("x-real-ip");
+          if (socket.remoteAddr == proxyhost || isLocalHost(socket.remoteAddr)) {
+            if (req.headers.get("x-real-ip")) {
+              socket.remoteAddr = req.headers.get("x-real-ip");
+            }
           }
           socket.remotePort = conn.remoteAddr.port;
           await this.accept(socket, room)
