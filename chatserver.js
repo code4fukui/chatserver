@@ -39,20 +39,16 @@ const handle = async (req, conn) => {
 
 const accept = async (ws, room) => {
   room.push(ws);
-  //console.log("open", room)
   const id = ws.remoteAddr + " " + ws.remotePort;
-  //console.log(id);
   ws.onmessage = (msg) => {
     const data = typeof msg.data == "string" ? msg.data : new Uint8Array(msg.data);
     const packet = { id, data };
     send(packet, ws, room);
-    //console.log("onmessage", data);
   };
   ws.onclose = () => {
     const idx = room.indexOf(ws);
     if (idx >= 0) {
       room.splice(idx, 1);
-      //console.log("close", room)
     }
   };
 };
@@ -62,7 +58,6 @@ const send = async (s, mysocket, room) => {
     for (const ws of room) {
       try {
         s.self = ws == mysocket;
-        //console.log("send " + s);
         await ws.send(CBOR.encode(s));
       } catch (e) {
         //cons.remove(ws);
@@ -74,21 +69,16 @@ const send = async (s, mysocket, room) => {
 
 const service = async (req, conn) => {
   const remoteAddr = conn.remoteAddr.hostname;
-  //console.log("remoteAddr", remoteAddr);
   try {
     const url = req.url;
     const purl = parseURL(url);
-    //console.log({purl})
     req.path = purl.path;
     req.query = purl.query;
     req.host = purl.host;
     req.port = purl.port;
     req.remoteAddr = remoteAddr;        
-    //console.log("REQ", req);
     if (log) await log(req);
     const resd = await handle(req, conn);
-    //console.log(purl.path, resd);
-    //res.respondWith(resd);
     return resd;
   } catch (e) {
     console.log(e);
