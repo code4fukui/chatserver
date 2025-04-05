@@ -1,3 +1,5 @@
+import { Time } from "https://js.sabae.cc/DateTime.js";
+
 export const blob2bin = async (blob) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -53,4 +55,22 @@ export const insertChild = (parent, c) => {
   } else {
     parent.appendChild(c);
   }
+};
+
+export const insertComment = (parent, data) => {
+  if (typeof data.data != "string") return;
+  const s = data.data;
+  const div = document.createElement("div");
+  const time = new Time().toStringSec();
+  if (s.startsWith("https://") || s.startsWith("http://")) {
+    div.textContent = data.id + " " + time + " > ";
+    const a = document.createElement("a");
+    a.setAttribute("href", s);
+    a.setAttribute("target", "_blank");
+    a.textContent = s;
+    div.appendChild(a);
+  } else {
+    div.textContent = data.id + " " + time + " > " + s;
+  }
+  insertChild(parent, div);
 };

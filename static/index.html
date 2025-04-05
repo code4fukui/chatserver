@@ -18,7 +18,7 @@
 
 <script type="module">
 import { CBOR } from "https://js.sabae.cc/CBOR.js";
-import { blob2bin, insertChild } from "./util.js";
+import { blob2bin, insertComment } from "./util.js";
 import { Time } from "https://js.sabae.cc/DateTime.js";
 
 btnenter.onclick = () => {
@@ -33,10 +33,7 @@ btnenter.onclick = () => {
   socket.onmessage = async (msg) => {
     const bin = await blob2bin(msg.data);
     const data = CBOR.decode(bin);
-    const div = document.createElement("div");
-    const time = new Time().toStringSec();
-    div.textContent = data.id + " " + time + " > " + data.data;
-    insertChild(recv, div);
+    insertComment(recv, data);
   };
   btn.onclick = () => {
     socket.send(mes.value);
