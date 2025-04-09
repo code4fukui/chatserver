@@ -24,9 +24,14 @@ import { Time } from "https://js.sabae.cc/DateTime.js";
 
 const audio = new Audio();
 audio.src = "./matte.mp3";
-
 const playMatte = () => {
   audio.play();
+};
+
+const audio2 = new Audio();
+audio2.src = "./shitsumon.mp3";
+const playQ = () => {
+  audio2.play();
 };
 
 btnenter.onclick = () => {
@@ -45,8 +50,10 @@ btnenter.onclick = () => {
     console.log(data)
     if (typeof data.data == "string") {
       insertComment(recv, data);
-      if (data.data.indexOf("待って") >= 0) {
+      if (data.data.indexOf("待って！") >= 0) {
         playMatte();
+      } else if (data.data.indexOf("質問！") >= 0) {
+        playQ();
       }
     } else {
       const id = "screen_" + data.id;
