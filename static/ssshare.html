@@ -22,6 +22,13 @@ import { CBOR } from "https://js.sabae.cc/CBOR.js";
 import { blob2bin, jpeg2img, canvas2bin, eqaulsBin, insertComment } from "./util.js";
 import { Time } from "https://js.sabae.cc/DateTime.js";
 
+const audio = new Audio();
+audio.src = "./matte.mp3";
+
+const playMatte = () => {
+  audio.play();
+};
+
 btnenter.onclick = () => {
   main.style.display = "block";
   const roomname = room.value == "" ? "default" : room.value;
@@ -38,6 +45,9 @@ btnenter.onclick = () => {
     console.log(data)
     if (typeof data.data == "string") {
       insertComment(recv, data);
+      if (data.data.indexOf("待って") >= 0) {
+        playMatte();
+      }
     } else {
       const id = "screen_" + data.id;
       let div = document.getElementById(id);
