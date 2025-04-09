@@ -1,48 +1,93 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
-<title>Deno WebSocket chat</title>
+<title>ssrecv - with Deno/chatserver</title>
 </head><body>
-<h1>Deno WebSocket chat (<a href=https://github.com/code4fukui/chatserver/>src</a>)</h1>
+<h1>ssrecv - with Deno/chatserver (<a href=https://github.com/code4fukui/chatserver/>src</a>)</h1>
 
+<div id=roomdiv>
 <input id=room placeholder="room name"><button id=btnenter>enter</button><br>
 <br>
+</div>
 
 <main id=main style="display:none">
-<input id=mes><button id=btn>send</button> <button id=btnwait>待って！</button>
-<div id=recv></div>
-</main>
+<!--<button id=btncap>capture screen</button>-->
+<div id=screens></div>
 
-<!--
-<hr>
-<a href=https://github.com/code4fukui/chatserver/>src on GitHub</a><br>
--->
+<div id=divmes>
+<input id=mes><button id=btn>つぶやく</button>
+<button id=btnwait>待って！</button>
+<button id=btnq>質問！</button>
+<div id=recv></div>
+</div>
+
+</main>
 
 <script type="module">
 import { CBOR } from "https://js.sabae.cc/CBOR.js";
-import { blob2bin, insertComment } from "./util.js";
-import { Time } from "https://js.sabae.cc/DateTime.js";
+import { blob2bin, jpeg2img, canvas2bin, insertComment } from "./util.js";
 
 btnenter.onclick = () => {
   main.style.display = "block";
+  roomdiv.style.display = "none";
+
   const roomname = room.value == "" ? "default" : room.value;
   const host = document.location.hostname;
   const port = document.location.port ? ":" + document.location.port : "";
   const protocol = document.location.protocol == "https:" ? "wss:" : "ws:";
   const address = `${protocol}//${host}${port}/${roomname}/ws`;
   console.log(address)
+  
   const socket = new WebSocket(address);
+  let bkimg = null;
   socket.onmessage = async (msg) => {
     const bin = await blob2bin(msg.data);
     const data = CBOR.decode(bin);
-    insertComment(recv, data);
+    if (typeof data.data == "string") {
+      insertComment(recv, data);
+    } else {
+      //screens.innerHTML = "";
+      const img = jpeg2img(data.data);
+      screens.appendChild(img);
+      if (bkimg) {
+        const bkimg2 = bkimg;
+        divmes.style.top = bkimg2.clientHeight + "px";
+        setTimeout(() => {
+          screens.removeChild(bkimg2);
+        }, 0);
+      }
+      bkimg = img;
+    }
   };
   btn.onclick = () => {
     socket.send(mes.value);
     mes.value = "";
   };
   btnwait.onclick = () => {
-    socket.send("ちょっとまって！");
+    socket.send("待って！");
+  };
+  btnq.onclick = () => {
+    socket.send("質問！");
   };
 };
 
+screens.onclick = () => {
+  screens.requestFullscreen();
+};
 </script>
+
+<style>
+#screens {
+  position: relative;
+}
+#screens img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+#divmes {
+  position: relative;
+  padding-top: .5em;
+}
+</style>
+
 </body></html>

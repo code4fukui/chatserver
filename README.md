@@ -28,7 +28,7 @@ chat in each browsers. (お互いチャットできる！)
 
 open http://localhost:7001/ssshare.html by a browser instance. (ブラウザで http://localhost:7001/ssshare.html を開く)
 
-open http://localhost:7001/ssrecv.html by a browser instance. (ブラウザで http://localhost:7001/ssrecv.html を開く)
+open http://localhost:7001/ by a browser instance. (ブラウザで http://localhost:7001/ssrecv.html を開く)
 
 you can share your screen. (画面を配信できる！)
 
