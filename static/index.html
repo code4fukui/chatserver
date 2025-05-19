@@ -72,6 +72,12 @@ btnenter.onclick = () => {
 screens.onclick = () => {
   screens.requestFullscreen();
 };
+
+const hash = location.hash.substring(1) || "";
+if (hash != "_") {
+  room.value = decodeURIComponent(hash);
+  btnenter.onclick();
+}
 </script>
 
 <style>
