@@ -1,39 +1,38 @@
 # chatserver
 
-chatserver for Deno2
+A chat server built using Deno.
 
-## how to run
+## Features
+- Simple chat functionality
+- Screen sharing capability
 
-setup [Deno](https://deno.land/) ([Deno](https://deno.land/)をインストール)
+## Requirements
+- [Deno](https://deno.land/) installed
 
-clone this repository (このリポジトリをクローン)
-```
-git clone https://github.com/code4fukui/chatserver.git
-```
-or download (もしくは、ダウンロード)
+## Usage
 
-```
-cd chatserver
-deno serve --port 7001 --host "[::]" -A chatserver.js
-```
+1. Clone the repository:
+   ```
+   git clone https://github.com/code4fukui/chatserver.git
+   ```
+   or download the files.
 
-### simple chat
+2. Run the server:
+   ```
+   cd chatserver
+   deno serve --port 7001 --host "[::]" -A chatserver.js
+   ```
 
-open http://localhost:7001/ by tow browser instances. (ブラウザで http://localhost:7001/ を2画面開く)
+### Simple Chat
+1. Open two browser instances at `http://localhost:7001/`.
+2. Chat in each browser.
 
-chat in each browsers. (お互いチャットできる！)
+### Screen Sharing
+1. Open a browser at `http://localhost:7001/ssshare.html`.
+2. Open another browser at `http://localhost:7001/`.
+3. Share your screen.
 
-
-### screen share
-
-open http://localhost:7001/ssshare.html by a browser instance. (ブラウザで http://localhost:7001/ssshare.html を開く)
-
-open http://localhost:7001/ by a browser instance. (ブラウザで http://localhost:7001/ssrecv.html を開く)
-
-you can share your screen. (画面を配信できる！)
-
-## setting for nginx proxy
-
+## Nginx Proxy Configuration
 ```
 server {
   listen 80;
@@ -48,3 +47,6 @@ server {
   }
 }
 ```
+
+## License
+MIT License
