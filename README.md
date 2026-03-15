@@ -1,5 +1,7 @@
 # chatserver
 
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
+
 A chat server built using Deno.
 
 ## Features
