@@ -1,50 +1,81 @@
 # chatserver
 
-chatserver for Deno2
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
 
-## how to run
+A simple chat and screen sharing server built with Deno and WebSockets.
 
-setup [Deno](https://deno.land/) ([Deno](https://deno.land/)をインストール)
+## Features
 
-clone this repository (このリポジトリをクローン)
-```
+-   **Room-based Chat:** Create chat rooms for real-time text communication.
+-   **Screen Sharing:** Broadcast a user's screen to others in the same room.
+-   **Lightweight:** Minimalist server and client-side implementation.
+-   **Audio Cues:** Plays sound alerts for specific messages like "待って！" (Wait!) and "質問！" (Question!).
+
+## Requirements
+
+-   [Deno](https://deno.land/) (v1.32 or later recommended)
+
+## Getting Started
+
+### 1. Clone the Repository
+
+```bash
 git clone https://github.com/code4fukui/chatserver.git
-```
-or download (もしくは、ダウンロード)
-
-```
 cd chatserver
+```
+
+### 2. Run the Server
+
+Start the server on port 7001. The `--host "[::]"` flag binds to all available network interfaces (IPv4 and IPv6).
+
+```bash
 deno serve --port 7001 --host "[::]" -A chatserver.js
 ```
 
-### simple chat
+The server is now running and ready to accept connections.
 
-open http://localhost:7001/ by tow browser instances. (ブラウザで http://localhost:7001/ を2画面開く)
+## How to Use
 
-chat in each browsers. (お互いチャットできる！)
+### Text Chat
 
+1.  Open two separate browser tabs or windows and navigate to `http://localhost:7001/`.
+2.  In both tabs, enter the same room name (e.g., "my-room") and click **enter**.
+3.  You can now send messages between the two clients.
 
-### screen share
+### Screen Sharing
 
-open http://localhost:7001/ssshare.html by a browser instance. (ブラウザで http://localhost:7001/ssshare.html を開く)
+This requires one "Sharer" and at least one "Viewer".
 
-open http://localhost:7001/ by a browser instance. (ブラウザで http://localhost:7001/ssrecv.html を開く)
+1.  **Sharer:**
+    -   Open a browser and navigate to `http://localhost:7001/ssshare.html`.
+    -   Enter a room name and click **enter**.
+    -   Click the **start to share screen** button and select the screen or window you wish to broadcast.
 
-you can share your screen. (画面を配信できる！)
+2.  **Viewer(s):**
+    -   Open another browser tab and navigate to `http://localhost:7001/`.
+    -   Enter the **same room name** used by the Sharer and click **enter**.
+    -   The shared screen will appear in the browser window. Viewers can also send text messages and use the "待って！" and "質問！" buttons.
 
-## setting for nginx proxy
+## Nginx Proxy Configuration
 
-```
+To run this server behind an Nginx proxy with WebSocket support, use a configuration similar to the following:
+
+```nginx
 server {
   listen 80;
-  server_name xxxx.xxxx.xxxx;
-  proxy_http_version 1.1;
-  proxy_set_header Host $host;
-  proxy_set_header Upgrade $http_upgrade; 
-  proxy_set_header Connection $connection_upgrade;
-  proxy_set_header X-Real-IP $remote_addr;
+  server_name your.domain.com;
+
   location / {
     proxy_pass http://localhost:7001/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
   }
 }
 ```
+
+## License
+
+MIT License
